@@ -39,7 +39,7 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName("API Key")
-            .setDesc("The API Key given to you by ImgBB.  This is attempted to be stored securely, but is store as plaintext otherwise")
+            .setDesc("The API Key given to you by ImgBB.  This is attempted to be stored securely, but is stored as plaintext otherwise.  Once you paste your API key in, close the window and re-open settings to validate the value is set to 'hidden'")
             .addText((text) => {
                 text
                     .setPlaceholder("apikey123")
