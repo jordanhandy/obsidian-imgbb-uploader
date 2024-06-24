@@ -1,22 +1,15 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import ImgBBUploaderSettingsTab from './settings-tab'
+import { DEFAULT_SETTINGS, ImgBBSettings } from "./settings-tab";
+
 const electron = require('electron');
-
-// Remember to rename these classes and interfaces!
-
-interface MyPluginSettings {
-	mySetting: string;
-}
-
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
-}
-
 export default class ImgBBUploader extends Plugin {
-	settings: MyPluginSettings;
+	settings: ImgBBSettings;
 
 	async onload() {
 		let isSafeStorage = electron.safeStorage.isEncryptionAvailable();
 		await this.loadSettings();
+		this.addSettingTab(new ImgBBUploaderSettingsTab(this.app,this));
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
