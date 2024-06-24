@@ -45,7 +45,7 @@ export default class ImgBBUploader extends Plugin {
 	}
 	private async uploadFiles(files: FileList, event, editor) {
 		let formParams;
-		if (files.length > 0) {
+		if (files.length > 0 && this.settings.apiKey != '') {
 			for (let file of files) {
 				if (this.isType(file)) {
 					event.preventDefault();
@@ -77,11 +77,15 @@ export default class ImgBBUploader extends Plugin {
 						let replaceMarkdownText = `![](${res.data.data.display_url})`;
 						// Show MD syntax using uploaded image URL, in Obsidian Editor
 						this.replaceText(editor, pastePlaceText, replaceMarkdownText);
+					}).catch((err)=>{
+						new Notice('There was an error uploading images to imgBB.  Please double-check settings and try again.  You can share the error message with the developer '+err,0);
 					})
 
 				}
 			}
 
+		}else{
+			new Notice('It looks like you haven\'t specified an API key.  This is required for upload',0);
 		}
 	}
 
