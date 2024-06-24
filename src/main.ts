@@ -1,6 +1,7 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import ImgBBUploaderSettingsTab from './settings-tab'
 import { DEFAULT_SETTINGS, ImgBBSettings } from "./settings-tab";
+import axios from "axios"
 
 const electron = require('electron');
 export default class ImgBBUploader extends Plugin {
