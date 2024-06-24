@@ -26,11 +26,11 @@ export default class ImgBBUploader extends Plugin {
 	}
 	private pasteHandler = async (event: ClipboardEvent, editor: Editor): Promise<void> => {
 		const { files } = event.clipboardData;
-		await this.uploadFiles(files, event, editor); // to fix
+		await this.uploadFiles(files, event, editor);
 	}
 	private dropHandler = async (event: DragEventInit, editor: Editor): Promise<void> => {
 		const { files } = event.dataTransfer;
-		await this.uploadFiles(files, event, editor); // to fix
+		await this.uploadFiles(files, event, editor);
 	}
 
 	private isType(file: File): boolean {
