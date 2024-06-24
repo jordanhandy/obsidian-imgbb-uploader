@@ -7,9 +7,29 @@ const electron = require('electron');
 export default class ImgBBUploader extends Plugin {
 	settings: ImgBBSettings;
 
+	private setupHandlers(): void {
+		if (this.settings.clipboardUpload) {
+			this.registerEvent(this.app.workspace.on('editor-paste', this.pasteHandler));
+		} else {
+			this.app.workspace.off('editor-paste', this.pasteHandler);
+		}
+		if (this.settings.dropUpload) {
+			this.registerEvent(this.app.workspace.on('editor-drop', this.dropHandler));
+		} else {
+			this.app.workspace.off('editor-drop', this.dropHandler);
+		}
+	}
+	private pasteHandler = async (event: ClipboardEvent, editor: Editor): Promise<void> => {
+		const { files } = event.clipboardData;
+		await this.uploadFiles(files, event, editor); // to fix
+	}
+	private dropHandler = async (event: DragEventInit, editor: Editor): Promise<void> => {
+		const { files } = event.dataTransfer;
+		await this.uploadFiles(files, event, editor); // to fix
+	}
 	async onload() {
 		await this.loadSettings();
-		this.addSettingTab(new ImgBBUploaderSettingsTab(this.app,this));
+		this.addSettingTab(new ImgBBUploaderSettingsTab(this.app, this));
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
@@ -92,12 +112,12 @@ class SampleModal extends Modal {
 	}
 
 	onOpen() {
-		const {contentEl} = this;
+		const { contentEl } = this;
 		contentEl.setText('Woah!');
 	}
 
 	onClose() {
-		const {contentEl} = this;
+		const { contentEl } = this;
 		contentEl.empty();
 	}
 }
@@ -111,7 +131,7 @@ class SampleSettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
-		const {containerEl} = this;
+		const { containerEl } = this;
 
 		containerEl.empty();
 

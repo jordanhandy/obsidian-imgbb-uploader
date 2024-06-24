@@ -14,12 +14,16 @@ import ImgBBUploader from './main'
 export interface ImgBBSettings {
         apiKey: string;
         expiration:boolean;
-        expirationTime:string
+        expirationTime:string;
+        clipboard:boolean;
+        dragDrop:boolean;
     }
 export const DEFAULT_SETTINGS: ImgBBSettings = {
     apiKey: "",
     expiration: false,
-    expirationTime:""
+    expirationTime:"",
+    clipboard: true,
+    dragDrop: false
 };
 export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
   
@@ -79,5 +83,39 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
                         }
                     })
             });
+            containerEl.createEl("h4", { text: "Behaviour" });
+            new Setting(containerEl)
+            .setName("Paste via clipboard copy/paste?")
+            .setDesc("Enable clipboard copy / paste?")
+            .addToggle((toggle) => {
+                toggle
+                    .setValue(this.plugin.settings.clipboard)
+                    .onChange(async (value) => {
+                        try {
+                            this.plugin.settings.clipboard = value;
+                            await this.plugin.saveSettings();
+                        }
+                        catch (e) {
+                            console.log(e)
+                        }
+                    })
+            });
+            new Setting(containerEl)
+            .setName("Enable drag / drop uploads?")
+            .setDesc("Enable drag and drop uploads?")
+            .addToggle((toggle) => {
+                toggle
+                    .setValue(this.plugin.settings.dragDrop)
+                    .onChange(async (value) => {
+                        try {
+                            this.plugin.settings.dragDrop = value;
+                            await this.plugin.saveSettings();
+                        }
+                        catch (e) {
+                            console.log(e)
+                        }
+                    })
+            });
+
     }
 }
