@@ -7,11 +7,11 @@ import axios from "axios";
 const electron = require('electron');
 export default class ImgBBUploader extends Plugin {
 	settings: ImgBBSettings;
-	
+
 	private clearHandlers(): void {
 		this.app.workspace.off('editor-paste', this.pasteHandler);
 		this.app.workspace.off('editor-drop', this.dropHandler);
-	  }
+	}
 
 	private setupHandlers(): void {
 		if (this.settings.clipboard) {
@@ -37,9 +37,9 @@ export default class ImgBBUploader extends Plugin {
 	private isType(file: File): boolean {
 		let isValid = false;
 		for (let ext of supportedExtensions) {
-			if (file.name.endsWith(ext)){
-			isValid = true;
-			return isValid;
+			if (file.name.endsWith(ext)) {
+				isValid = true;
+				return isValid;
 			}
 		}
 		return isValid;
@@ -49,9 +49,10 @@ export default class ImgBBUploader extends Plugin {
 		if (files.length > 0) {
 			for (let file of files) {
 				if (this.isType(file)) {
+					event.preventDefault();
 					const randomString = (Math.random() * 10086).toString(36).substr(0, 8)
-            const pastePlaceText = `![uploading...](${randomString})\n`
-            editor.replaceSelection(pastePlaceText)
+					const pastePlaceText = `![uploading...](${randomString})\n`
+					editor.replaceSelection(pastePlaceText)
 					if (this.settings.expiration) {
 						formParams = {
 							key: this.settings.apiKey,
@@ -69,12 +70,14 @@ export default class ImgBBUploader extends Plugin {
 						url: `https://api.imgbb.com/1/upload`,
 						method: 'POST',
 						data: formData,
-						headers:{
-							"Content-Type":"multipart/form-data",
+						headers: {
+							"Content-Type": "multipart/form-data",
 						},
-						params:formParams
-					}).then((res)=>{
-						console.log(res);
+						params: formParams
+					}).then((res) => {
+						let replaceMarkdownText = `![](${res.data.data.display_url})`;
+						// Show MD syntax using uploaded image URL, in Obsidian Editor
+						this.replaceText(editor, pastePlaceText, replaceMarkdownText);
 					})
 
 				}
@@ -85,23 +88,23 @@ export default class ImgBBUploader extends Plugin {
 
 
 
-	  // Function to replace text
-	  private replaceText(editor: Editor, target: string, replacement: string): void {
+	// Function to replace text
+	private replaceText(editor: Editor, target: string, replacement: string): void {
 		target = target.trim();
 		let lines = [];
 		for (let i = 0; i < editor.lineCount(); i++) {
-		  lines.push(editor.getLine(i));
+			lines.push(editor.getLine(i));
 		}
 		for (let i = 0; i < lines.length; i++) {
-		  const ch = lines[i].indexOf(target)
-		  if (ch !== -1) {
-			const from = { line: i, ch };
-			const to = { line: i, ch: ch + target.length };
-			editor.replaceRange(replacement, from, to);
-			break;
-		  }
+			const ch = lines[i].indexOf(target)
+			if (ch !== -1) {
+				const from = { line: i, ch };
+				const to = { line: i, ch: ch + target.length };
+				editor.replaceRange(replacement, from, to);
+				break;
+			}
 		}
-	  }
+	}
 	async onload() {
 		await this.loadSettings();
 		this.addSettingTab(new ImgBBUploaderSettingsTab(this.app, this));
@@ -110,6 +113,7 @@ export default class ImgBBUploader extends Plugin {
 
 	onunload() {
 		console.log('unloading imgBB Uploader...');
+		this.clearHandlers();
 	}
 
 	async loadSettings() {
