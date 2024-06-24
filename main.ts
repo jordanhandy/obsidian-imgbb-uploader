@@ -1,4 +1,5 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+const electron = require('electron');
 
 // Remember to rename these classes and interfaces!
 
@@ -14,6 +15,7 @@ export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
 
 	async onload() {
+		let isSafeStorage = electron.safeStorage.isEncryptionAvailable();
 		await this.loadSettings();
 
 		// This creates an icon in the left ribbon.
