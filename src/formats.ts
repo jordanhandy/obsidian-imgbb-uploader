@@ -1,0 +1,1 @@
+export const supportedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'];

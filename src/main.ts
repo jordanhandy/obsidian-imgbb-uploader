@@ -1,6 +1,7 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import ImgBBUploaderSettingsTab from './settings-tab'
 import { DEFAULT_SETTINGS, ImgBBSettings } from "./settings-tab";
+import { supportedExtensions } from './formats';
 import axios from "axios";
 
 const electron = require('electron');
@@ -27,6 +28,37 @@ export default class ImgBBUploader extends Plugin {
 		const { files } = event.dataTransfer;
 		await this.uploadFiles(files, event, editor); // to fix
 	}
+
+	private async uploadFiles(files : FileList,event,editor){
+		let formParams;
+		if(files.length > 0 && isType){
+			for(let file of files){
+				if(this.settings.expiration){
+					formParams = {
+						key: this.settings.apiKey,
+						expiration: this.settings.expirationTime
+					}
+				}else{
+					formParams = {
+						key: this.settings.apiKey,
+					}
+				}
+				let formData = new FormData();
+				formData.append('image',file);
+				// Make API call
+				axios({
+					url:'https://api.imgbb.com/upload',
+					method: 'POST',
+					data: formData,
+					params: formParams
+				})
+				
+			}
+
+		}
+	}
+
+
 	async onload() {
 		await this.loadSettings();
 		this.addSettingTab(new ImgBBUploaderSettingsTab(this.app, this));
