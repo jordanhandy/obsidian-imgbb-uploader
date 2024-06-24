@@ -1,32 +1,31 @@
 /*
- * @Author: Jordan Handy
- */
+* @Author: Jordan Handy
+*/
 import {
     App,
     PluginSettingTab,
     Setting,
 } from 'obsidian';
-const electron = require('electron');
 
 import ImgBBUploader from './main'
 
 //Define ImgBB Settings
 export interface ImgBBSettings {
-        apiKey: string;
-        expiration:boolean;
-        expirationTime:string;
-        clipboard:boolean;
-        dragDrop:boolean;
-    }
+    apiKey: string;
+    expiration: boolean;
+    expirationTime: string;
+    clipboard: boolean;
+    dragDrop: boolean;
+}
 export const DEFAULT_SETTINGS: ImgBBSettings = {
     apiKey: "",
     expiration: false,
-    expirationTime:"",
+    expirationTime: "",
     clipboard: true,
     dragDrop: false
 };
 export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
-  
+
     plugin: ImgBBUploader;
     constructor(app: App, plugin: ImgBBUploader) {
         super(app, plugin);
@@ -46,11 +45,12 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
                     .setPlaceholder("apikey123")
                     .setValue(this.plugin.settings.apiKey)
                     .onChange(async (value) => {
-                        this.plugin.settings.apiKey = value;
+                        process.env.apiKey = value;
+                        this.plugin.settings.apiKey = 'hidden';
                         await this.plugin.saveSettings();
                     })
             });
-            new Setting(containerEl)
+        new Setting(containerEl)
             .setName("Set Image Expiration?")
             .setDesc("If enabled, uploads will be automatically deleted after specified set time (seconds)")
             .addToggle((toggle) => {
@@ -83,8 +83,8 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
                         }
                     })
             });
-            containerEl.createEl("h4", { text: "Behaviour" });
-            new Setting(containerEl)
+        containerEl.createEl("h4", { text: "Behaviour" });
+        new Setting(containerEl)
             .setName("Paste via clipboard copy/paste?")
             .setDesc("Enable clipboard copy / paste?")
             .addToggle((toggle) => {
@@ -100,7 +100,7 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
                         }
                     })
             });
-            new Setting(containerEl)
+        new Setting(containerEl)
             .setName("Enable drag / drop uploads?")
             .setDesc("Enable drag and drop uploads?")
             .addToggle((toggle) => {

@@ -4,7 +4,6 @@ import { DEFAULT_SETTINGS, ImgBBSettings } from "./settings-tab";
 import { supportedExtensions } from './formats';
 import axios from "axios";
 
-const electron = require('electron');
 export default class ImgBBUploader extends Plugin {
 	settings: ImgBBSettings;
 
@@ -55,12 +54,12 @@ export default class ImgBBUploader extends Plugin {
 					editor.replaceSelection(pastePlaceText)
 					if (this.settings.expiration) {
 						formParams = {
-							key: this.settings.apiKey,
+							key: process.env.apiKey,
 							expiration: this.settings.expirationTime
 						}
 					} else {
 						formParams = {
-							key: this.settings.apiKey,
+							key: process.env.apiKey,
 						}
 					}
 					let formData = new FormData();
