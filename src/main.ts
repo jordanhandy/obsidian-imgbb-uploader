@@ -37,9 +37,10 @@ export default class ImgBBUploader extends Plugin {
 	private isType(file: File): boolean {
 		let isValid = false;
 		for (let ext of supportedExtensions) {
-			if (file.name.endsWith(ext));
+			if (file.name.endsWith(ext)){
 			isValid = true;
 			return isValid;
+			}
 		}
 		return isValid;
 	}
@@ -65,10 +66,13 @@ export default class ImgBBUploader extends Plugin {
 					formData.append('image', file);
 					// Make API call
 					axios({
-						url: 'https://api.imgbb.com/upload',
+						url: `https://api.imgbb.com/1/upload`,
 						method: 'POST',
 						data: formData,
-						params: formParams
+						headers:{
+							"Content-Type":"multipart/form-data",
+						},
+						params:formParams
 					}).then((res)=>{
 						console.log(res);
 					})
@@ -101,6 +105,7 @@ export default class ImgBBUploader extends Plugin {
 	async onload() {
 		await this.loadSettings();
 		this.addSettingTab(new ImgBBUploaderSettingsTab(this.app, this));
+		this.setupHandlers();
 	}
 
 	onunload() {
