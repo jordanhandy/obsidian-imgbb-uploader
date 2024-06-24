@@ -8,12 +8,12 @@ export default class ImgBBUploader extends Plugin {
 	settings: ImgBBSettings;
 
 	private setupHandlers(): void {
-		if (this.settings.clipboardUpload) {
+		if (this.settings.clipboard) {
 			this.registerEvent(this.app.workspace.on('editor-paste', this.pasteHandler));
 		} else {
 			this.app.workspace.off('editor-paste', this.pasteHandler);
 		}
-		if (this.settings.dropUpload) {
+		if (this.settings.dragDrop) {
 			this.registerEvent(this.app.workspace.on('editor-drop', this.dropHandler));
 		} else {
 			this.app.workspace.off('editor-drop', this.dropHandler);
