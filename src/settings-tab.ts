@@ -52,7 +52,7 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
             });
         new Setting(containerEl)
             .setName("Set Image Expiration?")
-            .setDesc("If enabled, uploads will be automatically deleted after specified set time (seconds)")
+            .setDesc("If enabled, uploads will be automatically deleted after specified set time (seconds).  Per ImgBB, minimum is 60 seconds.")
             .addToggle((toggle) => {
                 toggle
                     .setValue(this.plugin.settings.expiration)
