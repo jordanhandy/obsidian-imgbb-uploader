@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { Editor, Notice, Plugin} from 'obsidian';
 import ImgBBUploaderSettingsTab from './settings-tab'
 import { DEFAULT_SETTINGS, ImgBBSettings } from "./settings-tab";
 import { supportedExtensions } from './formats';
@@ -7,11 +7,13 @@ import axios from "axios";
 export default class ImgBBUploader extends Plugin {
 	settings: ImgBBSettings;
 
+	// Remove handlers for paste
 	private clearHandlers(): void {
 		this.app.workspace.off('editor-paste', this.pasteHandler);
 		this.app.workspace.off('editor-drop', this.dropHandler);
 	}
 
+	// Setup handlers depending on what was specified
 	private setupHandlers(): void {
 		if (this.settings.clipboard) {
 			this.registerEvent(this.app.workspace.on('editor-paste', this.pasteHandler));
@@ -24,15 +26,19 @@ export default class ImgBBUploader extends Plugin {
 			this.app.workspace.off('editor-drop', this.dropHandler);
 		}
 	}
+	// For clipboard copy paste
 	private pasteHandler = async (event: ClipboardEvent, editor: Editor): Promise<void> => {
 		const { files } = event.clipboardData;
 		await this.uploadFiles(files, event, editor);
 	}
+
+	// For Drag and Drop
 	private dropHandler = async (event: DragEventInit, editor: Editor): Promise<void> => {
 		const { files } = event.dataTransfer;
 		await this.uploadFiles(files, event, editor);
 	}
 
+	// Type-checking with imgBB supported formats
 	private isType(file: File): boolean {
 		let isValid = false;
 		for (let ext of supportedExtensions) {
@@ -43,6 +49,7 @@ export default class ImgBBUploader extends Plugin {
 		}
 		return isValid;
 	}
+	// Upload logic
 	private async uploadFiles(files: FileList, event, editor) {
 		let formParams;
 		if (files.length > 0 && this.settings.apiKey != '') {
@@ -108,12 +115,14 @@ export default class ImgBBUploader extends Plugin {
 			}
 		}
 	}
+	// Load settings and setup handlers
 	async onload() {
 		await this.loadSettings();
 		this.addSettingTab(new ImgBBUploaderSettingsTab(this.app, this));
 		this.setupHandlers();
 	}
 
+	// Unload plugin
 	onunload() {
 		console.log('unloading imgBB Uploader...');
 		this.clearHandlers();
@@ -124,7 +133,7 @@ export default class ImgBBUploader extends Plugin {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
 
-	// When saving settings
+	// When saving settings, clear handlers and start afresh
 	async saveSettings(): Promise<void> {
 		await this.saveData(this.settings);
 		this.clearHandlers();
