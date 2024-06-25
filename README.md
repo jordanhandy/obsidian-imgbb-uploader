@@ -14,7 +14,7 @@ ImgBB requires you have an API key.  You can get one by logging in to your ImgBB
 
 ![ImgBB API Key](https://i.ibb.co/gVzPg5p/image.png)
 
-The API key is referenced as an environment variable and is not saved to the data.json local file created by Obsidian.  For this reason, this reason, this plugin is available on Desktop only.
+The API key is referenced as an environment variable and is not saved to the data.json local file created by Obsidian.  For this reason, this plugin is available on Desktop only.
 
 ## How it Works
 ![demo gif](https://github.com/jordanhandy/obsidian-imgbb-uploader/assets/6423379/621de0c0-9664-4d2c-9753-773316c1d56f)
