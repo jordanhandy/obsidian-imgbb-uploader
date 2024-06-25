@@ -35,8 +35,7 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
         const { containerEl } = this;
 
         containerEl.empty();
-        containerEl.createEl("h3", { text: "ImgBB Settings" });
-
+        new Setting(containerEl).setName('ImgBB Settings').setHeading();
         new Setting(containerEl)
             .setName("API Key")
             .setDesc("The API Key given to you by ImgBB.  This value is stored as an environment variable and is not written to plugin persistent data.  Once you paste your API key in, close the window and re-open settings to validate the value is set to 'hidden'")
@@ -83,8 +82,8 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
                         }
                     })
             });
-        containerEl.createEl("h4", { text: "Behaviour" });
-        new Setting(containerEl)
+            new Setting(containerEl).setName('Behaviour').setHeading();
+            new Setting(containerEl)
             .setName("Paste via clipboard copy/paste?")
             .setDesc("Enable clipboard copy / paste?")
             .addToggle((toggle) => {
