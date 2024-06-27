@@ -50,6 +50,7 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.apiKey)
                     .onChange(async (value) => {
                         let tempKey;
+                        // Electron safeStorage to encrypt
                         if(safeStorage.isEncryptionAvailable()){
                             tempKey = safeStorage.encryptString(value);
                         }else{

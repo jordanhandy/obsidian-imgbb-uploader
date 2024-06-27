@@ -57,6 +57,7 @@ export default class ImgBBUploader extends Plugin {
 	// Upload logic
 	private async uploadFiles(files: FileList, event, editor) {
 		event.preventDefault();
+		// Decrypt key for uploading process -- safeStorage
 		let decryptedkey; // Decrypted buffer for API key | API key from settings
 
 		if(safeStorage.isEncryptionAvailable()){
