@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-imgbb-plugin",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "This plugin allows you to integrate with ImgBB and automatically upload pasted images to your imgBB account",
 	"main": "main.js",
 	"scripts": {
