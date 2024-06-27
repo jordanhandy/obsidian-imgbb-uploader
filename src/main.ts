@@ -3,6 +3,11 @@ import ImgBBUploaderSettingsTab from './settings-tab'
 import { DEFAULT_SETTINGS, ImgBBSettings } from "./settings-tab";
 import { supportedExtensions } from './formats';
 import axios from "axios";
+const Electron = require('electron')
+
+const {
+  remote: { safeStorage }
+} = Electron
 
 export default class ImgBBUploader extends Plugin {
 	settings: ImgBBSettings;
@@ -51,22 +56,29 @@ export default class ImgBBUploader extends Plugin {
 	}
 	// Upload logic
 	private async uploadFiles(files: FileList, event, editor) {
+		event.preventDefault();
+		let decryptedkey; // Decrypted buffer for API key | API key from settings
+
+		if(safeStorage.isEncryptionAvailable()){
+			decryptedkey = await safeStorage.decryptString(Buffer.from(this.settings.apiKey));
+		}else{
+			decryptedkey = this.settings.apiKey;
+		}
 		let formParams;
 		if (files.length > 0 && this.settings.apiKey != '') {
 			for (let file of files) {
 				if (this.isType(file)) {
-					event.preventDefault();
 					const randomString = (Math.random() * 10086).toString(36).substr(0, 8)
 					const pastePlaceText = `![uploading...](${randomString})\n`
 					editor.replaceSelection(pastePlaceText)
 					if (this.settings.expiration) {
 						formParams = {
-							key: process.env.apiKey,
+							key: decryptedkey,
 							expiration: this.settings.expirationTime
 						}
 					} else {
 						formParams = {
-							key: process.env.apiKey,
+							key: decryptedkey,
 						}
 					}
 					let formData = new FormData();

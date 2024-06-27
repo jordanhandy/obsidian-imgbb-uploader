@@ -8,6 +8,10 @@ import {
 } from 'obsidian';
 
 import ImgBBUploader from './main'
+const Electron = require("electron");
+const{
+    remote: { safeStorage }
+} = Electron
 
 //Define ImgBB Settings
 export interface ImgBBSettings {
@@ -44,8 +48,13 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
                     .setPlaceholder("apikey123")
                     .setValue(this.plugin.settings.apiKey)
                     .onChange(async (value) => {
-                        process.env.apiKey = value;
-                        this.plugin.settings.apiKey = 'hidden';
+                        let tempKey;
+                        if(safeStorage.isEncryptionAvailable()){
+                            tempKey = safeStorage.encryptString(value);
+                        }else{
+                            tempKey = value;
+                        }
+                        this.plugin.settings.apiKey = tempKey;
                         await this.plugin.saveSettings();
                     })
             });
