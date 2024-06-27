@@ -5,6 +5,7 @@ import {
     App,
     PluginSettingTab,
     Setting,
+    Notice
 } from 'obsidian';
 
 import ImgBBUploader from './main'
@@ -56,6 +57,7 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
                         }
                         this.plugin.settings.apiKey = tempKey;
                         await this.plugin.saveSettings();
+                        new Notice('API Key for imgBB has been encrypted and saved!',0);
                     })
             });
         new Setting(containerEl)
