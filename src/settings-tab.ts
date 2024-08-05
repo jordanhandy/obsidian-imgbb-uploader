@@ -40,10 +40,9 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
         const { containerEl } = this;
 
         containerEl.empty();
-        new Setting(containerEl).setName('ImgBB Settings').setHeading();
         new Setting(containerEl)
-            .setName("API Key")
-            .setDesc("The API Key given to you by ImgBB.  This value is stored as an environment variable and is not written to plugin persistent data.  Once you paste your API key in, close the window and re-open settings to validate the value is set to 'hidden'")
+            .setName("API key")
+            .setDesc("The API key given to you by ImgBB.  This value is stored as an environment variable and is not written to plugin persistent data.  Once you paste your API key in, close the window and re-open settings to validate the value is set to 'hidden'")
             .addText((text) => {
                 text
                     .setPlaceholder("apikey123")
@@ -62,7 +61,7 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
                     })
             });
         new Setting(containerEl)
-            .setName("Set Image Expiration?")
+            .setName("Set image expiration?")
             .setDesc("If enabled, uploads will be automatically deleted after specified set time (seconds).  Per ImgBB, minimum is 60 seconds.")
             .addToggle((toggle) => {
                 toggle
@@ -78,7 +77,7 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
                     })
             });
         new Setting(containerEl)
-            .setName("Expiration Time (seconds)")
+            .setName("Expiration time (seconds)")
             .setDesc("Expiration time for uploads (in seconds)")
             .addText((text) => {
                 text

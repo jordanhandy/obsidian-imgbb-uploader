@@ -84,7 +84,7 @@ export default class ImgBBUploader extends Plugin {
 					}
 					let formData = new FormData();
 					formData.append('image', file);
-					// Make API call
+					formData.append('key',decryptedkey);
 					axios({
 						url: `https://api.imgbb.com/1/upload`,
 						method: 'POST',
@@ -99,6 +99,7 @@ export default class ImgBBUploader extends Plugin {
 						this.replaceText(editor, pastePlaceText, replaceMarkdownText);
 					}).catch((err)=>{
 						new Notice('There was an error uploading images to imgBB.  Please double-check settings and try again.  You can share the error message with the developer '+err,0);
+						console.log(err);
 					})
 
 				}
