@@ -1,4 +1,4 @@
-import { Editor, Notice, Plugin} from 'obsidian';
+import { Editor, Notice, Plugin } from 'obsidian';
 import ImgBBUploaderSettingsTab from './settings-tab'
 import { DEFAULT_SETTINGS, ImgBBSettings } from "./settings-tab";
 import { supportedExtensions } from './formats';
@@ -6,7 +6,7 @@ import axios from "axios";
 const Electron = require('electron')
 
 const {
-  remote: { safeStorage }
+	remote: { safeStorage }
 } = Electron
 
 export default class ImgBBUploader extends Plugin {
@@ -34,7 +34,13 @@ export default class ImgBBUploader extends Plugin {
 	// For clipboard copy paste
 	private pasteHandler = async (event: ClipboardEvent, editor: Editor): Promise<void> => {
 		const { files } = event.clipboardData;
-		await this.uploadFiles(files, event, editor);
+		if (this.settings.captureLinks && event.clipboardData?.getData('text/plain') != '') {
+			await this.uploadFiles(files, event, editor, event.clipboardData?.getData('text/plain'));
+		} else {
+			if (files.length > 0) {
+				await this.uploadFiles(files, event, editor, event.clipboardData?.getData('text/plain'));
+			}
+		}
 	}
 
 	// For Drag and Drop
@@ -44,74 +50,86 @@ export default class ImgBBUploader extends Plugin {
 	}
 
 	// Type-checking with imgBB supported formats
-	private isType(file: File): boolean {
+	private isType(file: File | undefined, text: String | undefined): boolean {
 		let isValid = false;
 		for (let ext of supportedExtensions) {
-			if (file.name.endsWith(ext)) {
-				isValid = true;
-				return isValid;
+			if (file) {
+				if (file.name.endsWith(ext)) {
+					isValid = true;
+					return isValid;
+				}
+			} else if (text != '') {
+				if (text.endsWith(ext)) {
+					isValid = true;
+					return isValid;
+				}
 			}
 		}
 		return isValid;
 	}
 	// Upload logic
-	private async uploadFiles(files: FileList, event, editor) {
+	private async uploadFiles(files: FileList, event, editor: Editor, clipText: String | undefined) {
 		event.preventDefault();
 		// Decrypt key for uploading process -- safeStorage
 		let decryptedkey; // Decrypted buffer for API key | API key from settings
 
-		if(safeStorage.isEncryptionAvailable()){
+		if (safeStorage.isEncryptionAvailable()) {
 			decryptedkey = await safeStorage.decryptString(Buffer.from(this.settings.apiKey));
-		}else{
+		} else {
 			decryptedkey = this.settings.apiKey;
 		}
 		let formParams;
-		if (files.length > 0 && this.settings.apiKey != '') {
-			for (let file of files) {
-				if (this.isType(file)) {
-					const randomString = (Math.random() * 10086).toString(36).substr(0, 8)
-					const pastePlaceText = `![uploading...](${randomString})\n`
-					editor.replaceSelection(pastePlaceText)
-					if (this.settings.expiration) {
-						formParams = {
-							key: decryptedkey,
-							expiration: this.settings.expirationTime
-						}
-					} else {
-						formParams = {
-							key: decryptedkey,
-						}
+		if (this.settings.apiKey != '') {
+			if (this.settings.expiration) {
+				formParams = {
+					key: decryptedkey,
+					expiration: this.settings.expirationTime
+				}
+			} else {
+				formParams = {
+					key: decryptedkey,
+				}
+			}
+			if (files.length > 0) {
+				for (let file of files) {
+					if (this.isType(file, undefined)) {
+						this.apiCall(file, decryptedkey, formParams, editor);
 					}
-					let formData = new FormData();
-					formData.append('image', file);
-					formData.append('key',decryptedkey);
-					axios({
-						url: `https://api.imgbb.com/1/upload`,
-						method: 'POST',
-						data: formData,
-						headers: {
-							"Content-Type": "multipart/form-data",
-						},
-						params: formParams
-					}).then((res) => {
-						let replaceMarkdownText = `![](${res.data.data.display_url})`;
-						// Show MD syntax using uploaded image URL, in Obsidian Editor
-						this.replaceText(editor, pastePlaceText, replaceMarkdownText);
-					}).catch((err)=>{
-						new Notice('There was an error uploading images to imgBB.  Please double-check settings and try again.  You can share the error message with the developer '+err,0);
-						console.log(err);
-					})
-
+				}
+			} else if (clipText != '') {
+				if (this.isType(undefined, clipText)) {
+					this.apiCall(clipText, decryptedkey, formParams, editor);
 				}
 			}
 
-		}else{
-			new Notice('It looks like you haven\'t specified an API key.  This is required for upload',0);
+		} else {
+			new Notice('It looks like you haven\'t specified an API key.  This is required for upload', 0);
 		}
 	}
-
-
-
+	private async apiCall(file: File | String | undefined, decryptedkey: Blob, formParams: any, editor: Editor) {
+		const randomString = (Math.random() * 10086).toString(36).substr(0, 8)
+		const pastePlaceText = `![uploading...](${randomString})\n`
+		editor.replaceSelection(pastePlaceText);
+		let formData = new FormData();
+		formData.append('image', file);
+		formData.append('key', decryptedkey);
+		axios({
+			url: `https://api.imgbb.com/1/upload`,
+			method: 'POST',
+			data: formData,
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+			params: formParams
+		}).then((res) => {
+			let replaceMarkdownText = `![](${res.data.data.display_url})`;
+			// Show MD syntax using uploaded image URL, in Obsidian Editor
+			this.replaceText(editor, pastePlaceText, replaceMarkdownText);
+		}).catch((err) => {
+			new Notice('There was an error uploading images to imgBB.  Please double-check settings and try again.  You can share the error message with the developer ' + err, 0);
+			console.log(err);
+		})
+	}
 	// Function to replace text
 	private replaceText(editor: Editor, target: string, replacement: string): void {
 		target = target.trim();
