@@ -21,13 +21,15 @@ export interface ImgBBSettings {
     expirationTime: string;
     clipboard: boolean;
     dragDrop: boolean;
+    captureLinks: boolean;
 }
 export const DEFAULT_SETTINGS: ImgBBSettings = {
     apiKey: "",
     expiration: false,
     expirationTime: "",
     clipboard: true,
-    dragDrop: false
+    dragDrop: false,
+    captureLinks: false
 };
 export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
 
@@ -119,6 +121,22 @@ export default class ImgBBUploaderSettingsTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         try {
                             this.plugin.settings.dragDrop = value;
+                            await this.plugin.saveSettings();
+                        }
+                        catch (e) {
+                            console.log(e)
+                        }
+                    })
+            });
+            new Setting(containerEl)
+            .setName("Capture image hyperlinks on paste?")
+            .setDesc("If enabled, pasting image source URLs into a note will automatically attempt an upload to ImgBB")
+            .addToggle((toggle) => {
+                toggle
+                    .setValue(this.plugin.settings.captureLinks)
+                    .onChange(async (value) => {
+                        try {
+                            this.plugin.settings.captureLinks = value;
                             await this.plugin.saveSettings();
                         }
                         catch (e) {
