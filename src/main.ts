@@ -43,6 +43,9 @@ export default class ImgBBUploader extends Plugin {
 			this.isType(undefined, event.clipboardData?.getData('text/plain'))) {
 			await this.uploadFiles(files, event, editor, event.clipboardData?.getData('text/plain'));
 		} else {
+
+			// Otherwise, just check if files exist and don't pass text to
+			// method
 			if (files.length > 0) {
 				await this.uploadFiles(files, event, editor, undefined);
 			}
@@ -65,6 +68,7 @@ export default class ImgBBUploader extends Plugin {
 
 	// Type-checking with imgBB supported formats
 	private isType(file: File | undefined, text: String | undefined): boolean {
+		// File and text check for file extensions
 		let isValid = false;
 		for (let ext of supportedExtensions) {
 			if (file) {
@@ -105,12 +109,14 @@ export default class ImgBBUploader extends Plugin {
 				}
 			}
 			if (files.length > 0) {
+				// If files exist, check file type compatibility, then upload
 				for (let file of files) {
 					if (this.isType(file, undefined)) {
 						this.apiCall(file, decryptedkey, formParams, editor);
 					}
 				}
 			} else if (clipText != '') {
+				// If no files exist, we check text compatibility, then upload
 				if (this.isType(undefined, clipText)) {
 					this.apiCall(clipText, decryptedkey, formParams, editor);
 				}
