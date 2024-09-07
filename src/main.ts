@@ -34,7 +34,13 @@ export default class ImgBBUploader extends Plugin {
 	// For clipboard copy paste
 	private pasteHandler = async (event: ClipboardEvent, editor: Editor): Promise<void> => {
 		const { files } = event.clipboardData;
-		if (this.settings.captureLinks && event.clipboardData?.getData('text/plain') != '') {
+
+		// If you enabled to capture links, we find the plaintext of the link,
+		// and also check if it is a valid image format for upload.  Only then do we
+		// trigger upload logic
+		if (this.settings.captureLinks &&
+			event.clipboardData?.getData('text/plain') != '' &&
+			this.isType(undefined, event.clipboardData?.getData('text/plain'))) {
 			await this.uploadFiles(files, event, editor, event.clipboardData?.getData('text/plain'));
 		} else {
 			if (files.length > 0) {
@@ -46,7 +52,15 @@ export default class ImgBBUploader extends Plugin {
 	// For Drag and Drop
 	private dropHandler = async (event: DragEventInit, editor: Editor): Promise<void> => {
 		const { files } = event.dataTransfer;
-		await this.uploadFiles(files, event, editor);
+		if (this.settings.captureLinks &&
+			event.clipboardData?.getData('text/plain') != '' &&
+			this.isType(undefined, event.clipboardData?.getData('text/plain'))) {
+			await this.uploadFiles(files, event, editor, event.clipboardData?.getData('text/plain'));
+		} else {
+			if (files.length > 0) {
+				await this.uploadFiles(files, event, editor, event.clipboardData?.getData('text/plain'));
+			}
+		}
 	}
 
 	// Type-checking with imgBB supported formats
