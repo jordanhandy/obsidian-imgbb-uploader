@@ -44,7 +44,7 @@ export default class ImgBBUploader extends Plugin {
 			await this.uploadFiles(files, event, editor, event.clipboardData?.getData('text/plain'));
 		} else {
 			if (files.length > 0) {
-				await this.uploadFiles(files, event, editor, event.clipboardData?.getData('text/plain'));
+				await this.uploadFiles(files, event, editor, undefined);
 			}
 		}
 	}
@@ -53,12 +53,12 @@ export default class ImgBBUploader extends Plugin {
 	private dropHandler = async (event: DragEventInit, editor: Editor): Promise<void> => {
 		const { files } = event.dataTransfer;
 		if (this.settings.captureLinks &&
-			event.clipboardData?.getData('text/plain') != '' &&
-			this.isType(undefined, event.clipboardData?.getData('text/plain'))) {
-			await this.uploadFiles(files, event, editor, event.clipboardData?.getData('text/plain'));
+			event.dataTransfer?.getData('text/plain') != '' &&
+			this.isType(undefined, event.dataTransfer?.getData('text/plain'))) {
+			await this.uploadFiles(files, event, editor, event.dataTransfer?.getData('text/plain'));
 		} else {
 			if (files.length > 0) {
-				await this.uploadFiles(files, event, editor, event.clipboardData?.getData('text/plain'));
+				await this.uploadFiles(files, event, editor, undefined);
 			}
 		}
 	}
