@@ -12,7 +12,8 @@ This plugin allows you to automatically upload images pasted or dragged into Obs
 ## Setup and Security
 ImgBB requires you have an API key.  You can get one by logging in to your ImgBB account, selecting the "About" menu on the top-left-hand-side, and choosing "API".
 
-![ImgBB API Key](https://i.ibb.co/gVzPg5p/image.png)
+<img width="256" alt="image" src="https://github.com/user-attachments/assets/5e570fa3-ea55-48d4-bf64-4f4cc1f89223">
+
 
 When the API key is input into settings, the value is saved.  You will see a notice confirming the value has been encrypted.  If you leave the settings page and return, it may look as though the API key is blank again.  Assuming the plugin original data file hasn't been altered or deleted, your original API key is still encrypted and saved.
 
