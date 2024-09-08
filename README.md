@@ -1,5 +1,11 @@
 # ImgBB Uploader for Obsidian
 
+![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/jordanhandy/obsidian-imgbb-uploader/main.js) ![GitHub Tag](https://img.shields.io/github/v/tag/jordanhandy/obsidian-imgbb-uploader?label=version)
+
+[![License](https://img.shields.io/badge/License-MIT-blue)](#license)
+
+<div align="center">
+
 ## License
 
 Released under [MIT](/LICENSE) by [@jordanhandy](https://github.com/jordanhandy).
