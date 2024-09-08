@@ -87,10 +87,22 @@ export default class ImgBBUploader extends Plugin {
 	}
 	// Upload logic
 	private async uploadFiles(files: FileList, event, editor: Editor, clipText: String | undefined) {
-		event.preventDefault();
+		// Quickly need to prevent default action
+		// if file is not valid for upload
+		if (files.length > 0) {
+			for (let file of files) {
+				// If files exist, check file type compatibility, then upload
+				if (this.isType(file, undefined)) {
+					event.preventDefault();
+					break;
+				}
+			}
+		}else if(clipText != ''){
+			event.preventDefault();
+		}
+
 		// Decrypt key for uploading process -- safeStorage
 		let decryptedkey; // Decrypted buffer for API key | API key from settings
-
 		if (safeStorage.isEncryptionAvailable()) {
 			decryptedkey = await safeStorage.decryptString(Buffer.from(this.settings.apiKey));
 		} else {
@@ -108,9 +120,10 @@ export default class ImgBBUploader extends Plugin {
 					key: decryptedkey,
 				}
 			}
+
 			if (files.length > 0) {
-				// If files exist, check file type compatibility, then upload
 				for (let file of files) {
+					// If files exist, check file type compatibility, then upload
 					if (this.isType(file, undefined)) {
 						this.apiCall(file, decryptedkey, formParams, editor);
 					}
@@ -121,7 +134,6 @@ export default class ImgBBUploader extends Plugin {
 					this.apiCall(clipText, decryptedkey, formParams, editor);
 				}
 			}
-
 		} else {
 			new Notice('It looks like you haven\'t specified an API key.  This is required for upload', 0);
 		}
