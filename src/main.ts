@@ -154,7 +154,7 @@ export default class ImgBBUploader extends Plugin {
 			},
 			params: formParams
 		}).then((res) => {
-			let replaceMarkdownText = `![](${res.data.data.display_url})`;
+			let replaceMarkdownText = `![](${res.data.data.url})`;
 			// Show MD syntax using uploaded image URL, in Obsidian Editor
 			this.replaceText(editor, pastePlaceText, replaceMarkdownText);
 		}).catch((err) => {

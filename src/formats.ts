@@ -1,1 +1,11 @@
-export const supportedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'];
+export const supportedExtensions = [
+  "jpg",
+  "jpeg",
+  "png",
+  "gif",
+  "bmp",
+  "svg",
+  "webp",
+  "HEIC",
+];
+
